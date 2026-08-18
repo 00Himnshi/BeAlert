@@ -20,7 +20,9 @@ from twilio.rest import Client
 
 load_dotenv()
 
-LOGIN_URL = "https://e-exam.igdtuw.ac.in/exam/login/index.php"
+# The university portal currently serves this login page over HTTP.
+# This is less secure than HTTPS; see the README before using cloud automation.
+LOGIN_URL = "http://e-exam.igdtuw.ac.in/exam/login/index.php"
 
 
 @dataclass

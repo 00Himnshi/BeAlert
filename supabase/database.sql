@@ -21,5 +21,9 @@ for select
 to authenticated
 using (lower(auth.jwt() ->> 'email') = 'your-email@example.com');
 
+-- A policy says *who* is allowed; this grant lets signed-in users use SELECT
+-- at all. The policy above still limits the rows to your email address.
+grant select on public.assignments to authenticated;
+
 -- The GitHub Action uses the private service-role key, so it can add and update rows.
 -- There is deliberately no public insert, update, or delete policy.
