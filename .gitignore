@@ -1,0 +1,10 @@
+# Python
+checker/.venv/
+checker/__pycache__/
+checker/.env
+
+# React / Node
+dashboard/node_modules/
+dashboard/dist/
+dashboard/.env.local
+
