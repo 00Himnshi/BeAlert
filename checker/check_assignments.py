@@ -43,6 +43,30 @@ def required_setting(name: str) -> str:
     return value
 
 
+def validate_settings() -> None:
+    """Check settings before connecting to the portal or database."""
+    for name in (
+        "PORTAL_USERNAME",
+        "PORTAL_PASSWORD",
+        "COURSE_URL",
+        "SUPABASE_URL",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "TWILIO_ACCOUNT_SID",
+        "TWILIO_AUTH_TOKEN",
+        "TWILIO_FROM_NUMBER",
+        "ALERT_TO_NUMBER",
+        "TWILIO_CONTENT_SID",
+    ):
+        required_setting(name)
+
+    if not required_setting("TWILIO_FROM_NUMBER").startswith("whatsapp:"):
+        raise RuntimeError("TWILIO_FROM_NUMBER must begin with whatsapp:+")
+    if not required_setting("ALERT_TO_NUMBER").startswith("whatsapp:"):
+        raise RuntimeError("ALERT_TO_NUMBER must begin with whatsapp:+")
+    if not required_setting("TWILIO_CONTENT_SID").startswith("HX"):
+        raise RuntimeError("TWILIO_CONTENT_SID must start with HX")
+
+
 def make_portal_id(assignment_url: str) -> str:
     """Use Moodle's activity id when present; otherwise create a stable ID."""
     query = parse_qs(urlparse(assignment_url).query)
@@ -174,6 +198,7 @@ def send_whatsapp_message(new_assignments: list[Assignment]) -> None:
 
 
 def main() -> None:
+    validate_settings()
     course_url = required_setting("COURSE_URL")
     session = requests.Session()
     session.headers["User-Agent"] = "AssignmentAlerts/1.0 (personal academic notifier)"
@@ -186,14 +211,16 @@ def main() -> None:
     # The first run is a baseline. It saves existing work without treating the
     # whole course history as an urgent new WhatsApp notification.
     is_first_run = not known_ids
-    save_assignments(found_assignments, course_url)
-
     if is_first_run:
+        save_assignments(found_assignments, course_url)
         print(f"Baseline saved: {len(found_assignments)} assignment(s). No WhatsApp alert sent.")
     elif new_assignments:
+        # If WhatsApp fails, leave the new rows unsaved so the next run retries.
         send_whatsapp_message(new_assignments)
+        save_assignments(found_assignments, course_url)
         print(f"Sent one WhatsApp alert for {len(new_assignments)} new assignment(s).")
     else:
+        save_assignments(found_assignments, course_url)
         print("No new assignments found.")
 
 
