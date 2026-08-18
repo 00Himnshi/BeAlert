@@ -94,8 +94,16 @@ def find_assignments(session: requests.Session, course_url: str) -> list[Assignm
 
 
 def supabase_headers() -> dict[str, str]:
+    """Return headers for both current and older Supabase server keys."""
     key = required_setting("SUPABASE_SERVICE_ROLE_KEY")
-    return {"apikey": key, "Authorization": f"Bearer {key}", "Content-Type": "application/json"}
+    headers = {"apikey": key, "Content-Type": "application/json"}
+
+    # New Supabase secret keys begin with sb_secret_. They must only be sent
+    # as the apikey header. Older service_role keys are JWTs and also need the
+    # Authorization header to bypass Row Level Security.
+    if not key.startswith("sb_secret_"):
+        headers["Authorization"] = f"Bearer {key}"
+    return headers
 
 
 def existing_portal_ids() -> set[str]:

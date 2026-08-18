@@ -63,7 +63,7 @@ In GitHub open **Settings** → **Secrets and variables** → **Actions** → **
 | `PORTAL_PASSWORD` | Your university portal password |
 | `COURSE_URL` | Your course page URL, for example `http://e-exam.igdtuw.ac.in/exam/course/view.php?id=129` |
 | `SUPABASE_URL` | Supabase Project URL |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase `service_role` secret key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase **Secret key** (`sb_secret_...`), or the older `service_role` key |
 | `TWILIO_ACCOUNT_SID` | Twilio Account SID |
 | `TWILIO_AUTH_TOKEN` | Twilio Auth Token |
 | `TWILIO_FROM_NUMBER` | Your Twilio sender number, including `+` and country code |
