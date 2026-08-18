@@ -7,6 +7,7 @@ environment variables, never from this source code.
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import sys
 from dataclasses import dataclass
@@ -143,20 +144,32 @@ def save_assignments(assignments: list[Assignment], course_url: str) -> None:
     response.raise_for_status()
 
 
-def send_text_message(new_assignments: list[Assignment]) -> None:
-    """Send one readable SMS covering every assignment found in this run."""
+def send_whatsapp_message(new_assignments: list[Assignment]) -> None:
+    """Send one approved WhatsApp template message for new assignments."""
     if not new_assignments:
         return
 
-    lines = ["New assignment(s) found:"]
-    for assignment in new_assignments:
-        lines.extend([f"• {assignment.title}", assignment.assignment_url])
-
     client = Client(required_setting("TWILIO_ACCOUNT_SID"), required_setting("TWILIO_AUTH_TOKEN"))
+    from_address = required_setting("TWILIO_FROM_NUMBER")
+    to_address = required_setting("ALERT_TO_NUMBER")
+    content_sid = required_setting("TWILIO_CONTENT_SID")
+
+    if not from_address.startswith("whatsapp:") or not to_address.startswith("whatsapp:"):
+        raise RuntimeError("WhatsApp addresses must begin with whatsapp:+, for example whatsapp:+14155238886")
+
+    # WhatsApp starts new conversations with an approved Twilio template.
+    # In your template, {{1}} becomes assignment names and {{2}} becomes
+    # their links. Create the template wording to match those values.
     client.messages.create(
-        body="\n".join(lines),
-        from_=required_setting("TWILIO_FROM_NUMBER"),
-        to=required_setting("ALERT_TO_NUMBER"),
+        from_=from_address,
+        to=to_address,
+        content_sid=content_sid,
+        content_variables=json.dumps(
+            {
+                "1": "\n".join(item.title for item in new_assignments),
+                "2": "\n".join(item.assignment_url for item in new_assignments),
+            }
+        ),
     )
 
 
@@ -171,15 +184,15 @@ def main() -> None:
     new_assignments = [item for item in found_assignments if item.portal_id not in known_ids]
 
     # The first run is a baseline. It saves existing work without treating the
-    # whole course history as an urgent new SMS notification.
+    # whole course history as an urgent new WhatsApp notification.
     is_first_run = not known_ids
     save_assignments(found_assignments, course_url)
 
     if is_first_run:
-        print(f"Baseline saved: {len(found_assignments)} assignment(s). No SMS sent.")
+        print(f"Baseline saved: {len(found_assignments)} assignment(s). No WhatsApp alert sent.")
     elif new_assignments:
-        send_text_message(new_assignments)
-        print(f"Sent one SMS for {len(new_assignments)} new assignment(s).")
+        send_whatsapp_message(new_assignments)
+        print(f"Sent one WhatsApp alert for {len(new_assignments)} new assignment(s).")
     else:
         print("No new assignments found.")
 

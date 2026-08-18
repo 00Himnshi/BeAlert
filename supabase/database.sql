@@ -25,5 +25,9 @@ using (lower(auth.jwt() ->> 'email') = 'your-email@example.com');
 -- at all. The policy above still limits the rows to your email address.
 grant select on public.assignments to authenticated;
 
+-- The GitHub checker acts as Supabase's server role. It needs permission to
+-- read existing rows and insert/update the rows it finds.
+grant select, insert, update on public.assignments to service_role;
+
 -- The GitHub Action uses the private service-role key, so it can add and update rows.
 -- There is deliberately no public insert, update, or delete policy.

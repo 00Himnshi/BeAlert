@@ -21,7 +21,7 @@ jobs:
       - name: Install Python packages
         run: pip install -r checker/requirements.txt
 
-      - name: Check the portal and send an SMS if needed
+      - name: Check the portal and send a WhatsApp alert if needed
         run: python checker/check_assignments.py
         env:
           PORTAL_USERNAME: ${{ secrets.PORTAL_USERNAME }}
@@ -33,4 +33,3 @@ jobs:
           TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
           TWILIO_FROM_NUMBER: ${{ secrets.TWILIO_FROM_NUMBER }}
           ALERT_TO_NUMBER: ${{ secrets.ALERT_TO_NUMBER }}
-
