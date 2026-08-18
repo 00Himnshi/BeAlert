@@ -2,8 +2,8 @@ name: Check portal for new assignments
 
 on:
   schedule:
-    # Every 15 minutes. The unusual minutes avoid the busiest times.
-    - cron: "7,22,37,52 * * * *"
+    # Every 8 hours: 00:07, 08:07, and 16:07 UTC.
+    - cron: "7 0,8,16 * * *"
   workflow_dispatch:
 
 jobs:
