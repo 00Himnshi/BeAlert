@@ -81,7 +81,7 @@ function App() {
   return (
     <main className="page">
       <header>
-        <div><h1>Assignment Alerts</h1><p>Your portal is checked automatically every 15 minutes.</p></div>
+        <div><h1>Assignment Alerts</h1><p>Here are the latest assignments along with their links on the ELMS portal.</p></div>
         <button className="secondary" onClick={signOut}>Sign out</button>
       </header>
       <section className="toolbar"><button onClick={loadAssignments}>Refresh list</button><span>{assignments.length} assignment(s) saved</span></section>
@@ -91,7 +91,7 @@ function App() {
           <article key={assignment.assignment_url}>
             <h2>{assignment.title}</h2>
             <a href={assignment.assignment_url} target="_blank" rel="noreferrer">Open assignment</a>
-            <p>First found: {new Date(assignment.first_seen_at).toLocaleString()}</p>
+            <p>Date: {new Date(assignment.first_seen_at).toLocaleString()}</p>
           </article>
         ))}
       </section>
