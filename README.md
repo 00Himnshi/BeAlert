@@ -2,7 +2,7 @@
 
 Assignment Alerts is a personal automation that watches a  university course website and sends a WhatsApp notification when a new assignment appears. It also keeps a private dashboard of everything it has found.
 
-I built it to solve a practical problem: course portals are easy to forget to check, while missing a deadline is costly. The project turns that repeated manual check into a scheduled background job.
+I built it to solve a practical problem: Manually checking the portal required repeatedly logging in, navigating through multiple pages, and remembering to check for updates—creating a simple but real risk of missing newly posted assignments or deadlines. The project turns that repeated manual check into a scheduled background job.
 
 ## What it does
 
