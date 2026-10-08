@@ -3,7 +3,10 @@ name: Check portal for new assignments
 on:
   schedule:
     # Every 8 hours: 00:07, 08:07, and 16:07 UTC.
-    - cron: "7 0,8,16 * * *"
+    #- cron: "7 0,8,16 * * *"
+    #Changing workflow time to 6 months
+    # Every 6 months: 1st of January and July at 00:07 UTC.
+    - cron: "7 0 1 1,7 *"
   workflow_dispatch:
 
 jobs:
